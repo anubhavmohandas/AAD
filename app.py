@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 # Register blueprints for each practical
 app.register_blueprint(p1_bp, url_prefix='/practical1')
-app.register_blueprint(practical_bp, url_prefix='/practical2_1')
+app.register_blueprint(practical_bp, url_prefix='/practical2')
 app.register_blueprint(practical2_bp, url_prefix='/practical2_2')
 app.register_blueprint(p3_bp, url_prefix='/practical3')
 app.register_blueprint(p4_bp, url_prefix='/practical4')
