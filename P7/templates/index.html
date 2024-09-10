@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knapsack Problem Solver</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f7;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #444;
+        }
+        form {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        label, input, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+        }
+        input[type="text"], input[type="number"] {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background-color: #f9f9f9;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: darkcyan;
+            color: white;
+        }
+        td {
+            background-color: #e9ecef;
+        }
+        .red {
+            color: red;
+            font-weight: bold;
+        }
+        .result-section {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .result-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .result-section ul li {
+            background-color: #f1f1f1;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .info-section {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+        .info-section p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Knapsack Problem Solver</h1>
+    <form method="POST">
+        <label for="capacity">Enter the capacity of the knapsack (W):</label>
+        <input type="number" name="capacity" required value="{{ request.form['capacity'] if request.form.get('capacity') else '' }}">
+
+        <label for="num_items">Enter the number of items (n):</label>
+        <input type="number" name="num_items" required value="{{ request.form['num_items'] if request.form.get('num_items') else '' }}">
+
+        <label>Enter the profits and weights:</label>
+        <div>
+            <input type="text" name="profits" placeholder="Enter profits separated by commas (e.g., 3,4,5,6)" required value="{{ request.form['profits'] if request.form.get('profits') else '' }}">
+            <input type="text" name="weights" placeholder="Enter weights separated by commas (e.g., 2,3,4,5)" required value="{{ request.form['weights'] if request.form.get('weights') else '' }}">
+        </div>
+        
+        <button type="submit">Calculate</button>
+    </form>
+
+    {% if table %}
+        <div class="result-section">
+            <h3>Knapsack Table:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Items/Weight</th>
+                        {% for j in range(W + 1) %}
+                            <th>{{ j }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(n + 1) %}
+                        <tr>
+                            <th>{{ i }}</th>
+                            {% for j in range(W + 1) %}
+                                <td>{{ table[i][j] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <h2>Maximum Profit: <span class="red">{{ max_profit }}</span></h2>
+            
+            <h3>User Inputs Table:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Profit</th>
+                        <th>Weight</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(n) %}
+                        <tr>
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ profits[i] }}</td>
+                            <td>{{ weights[i] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <h3>Items Contributing to Maximum Profit:</h3>
+            <ul>
+                {% for weight, profit in included_items %}
+                    <li><strong>Weight:</strong> {{ weight }}, <strong>Profit:</strong> {{ profit }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+    {% endif %}
+</body>
+</html>

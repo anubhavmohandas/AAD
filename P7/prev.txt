@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knapsack Problem Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label, input, button {
+            display: block;
+            width: 95%;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            background-color: darkcyan;
+        }
+        th {
+            /* background-color: #f2f2f2; */
+            background-color: rgb(10, 67, 86);
+            color: white;
+        }
+        /* 
+        h2{
+            color: red;
+        } */
+
+    </style>
+</head>
+<body>
+    <h1>Knapsack Problem Solver</h1>
+    <form method="POST">
+        <label for="capacity">Enter the capacity of the knapsack (W):</label>
+        <input type="number" name="capacity" required>
+
+        <label for="num_items">Enter the number of items (n):</label>
+        <input type="number" name="num_items" required>
+
+        <div id="dynamic-fields">
+            <label>Enter the profits and weights:</label>
+            <div>
+                <input type="text" name="profits" placeholder="Enter profits separated by commas (e.g., 3,4,5,6)" required>
+                <input type="text" name="weights" placeholder="Enter weights separated by commas (e.g., 2,3,4,5)" required>
+            </div>
+        </div>
+        
+        <button type="submit">Calculate</button>
+    </form>
+
+    {% if table %}
+        <h2>Maximum Profit: <span style="color: red;">{{ max_profit }}</span></h2>
+        <h2>Knapsack Table:</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Items/Weight</th>
+                    {% for j in range(W + 1) %}
+                        <th>{{ j }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in range(n + 1) %}
+                    <tr>
+                        <th>{{ i }}</th>
+                        {% for j in range(W + 1) %}
+                            <td>{{ table[i][j] }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</body>
+</html>
+
+
+
+
+
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+def dynamic_knapsack(n, W, weights, profits):
+    # Initialize the table with zeros
+    table = [[0 for x in range(W + 1)] for x in range(n + 1)]
+
+    # Fill the table using the dynamic programming approach
+    for i in range(1, n + 1):
+        for j in range(W + 1):
+            if weights[i-1] <= j:
+                table[i][j] = max(table[i-1][j], profits[i-1] + table[i-1][j - weights[i-1]])
+            else:
+                table[i][j] = table[i-1][j]
+
+    # Find the maximum profit
+    max_profit = table[n][W]
+
+    # Return the filled table and maximum profit
+    return table, max_profit
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        # Get user inputs
+        W = int(request.form['capacity'])
+        n = int(request.form['num_items'])
+        
+        # Fetch profits and weights
+        profits = list(map(int, request.form['profits'].split(',')))
+        weights = list(map(int, request.form['weights'].split(',')))
+        
+        # Knapsack solution
+        table, max_profit = dynamic_knapsack(n, W, weights, profits)
+        
+        # Render the result
+        return render_template('index.html', table=table, max_profit=max_profit, profits=profits, weights=weights, W=W, n=n)
+    
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)

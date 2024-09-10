@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Closest Pair to Zero</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+        label {
+            font-size: 16px;
+            color: #555;
+        }
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Find the Pair with Sum Closest to Zero</h1>
+        <form id="inputForm">
+            <label for="numbers">Enter numbers (comma-separated):</label>
+            <input type="text" id="numbers" name="numbers" placeholder="e.g., 15, 5, -20, 30, -45" required>
+            <!-- <input type="text" id="numbers" name="numbers" value="15, 5, -20, 30, -45" required> -->
+            <button type="button" onclick="findClosestPair()">Find Pairs</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function findClosestPair() {
+            const input = document.getElementById('numbers').value;
+            const numbers = input.split(',').map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
+
+            if (numbers.length < 2) {
+                document.getElementById('result').innerText = 'Please enter at least two numbers.';
+                return;
+            }
+
+            numbers.sort((a, b) => a - b);
+
+            let left = 0;
+            let right = numbers.length - 1;
+            let closestSum = Infinity;
+            const closestPairs = [];
+
+            while (left < right) {
+                const currentSum = numbers[left] + numbers[right];
+
+                if (Math.abs(currentSum) < Math.abs(closestSum)) {
+                    closestSum = currentSum;
+                    closestPairs.length = 0; // Clear previous pairs
+                    closestPairs.push([numbers[left], numbers[right]]);
+                } else if (Math.abs(currentSum) === Math.abs(closestSum)) {
+                    closestPairs.push([numbers[left], numbers[right]]);
+                }
+
+                if (currentSum < 0) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+
+            const resultDiv = document.getElementById('result');
+            if (closestPairs.length > 0) {
+                resultDiv.innerHTML = 'The pairs with the closest sum to zero are: ' +
+                    closestPairs.map(pair => `(${pair[0]}, ${pair[1]})`).join(' and ');
+            } else {
+                resultDiv.innerHTML = 'No pairs found.';
+            }
+        }
+    </script>
+</body>
+</html>
