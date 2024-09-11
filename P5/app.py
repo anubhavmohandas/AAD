@@ -34,7 +34,7 @@ def min_coins(amount):
         'denominations': coins
     }
 
-@app.route('/practical5', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     result = None
     if request.method == 'POST':
